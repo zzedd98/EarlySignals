@@ -1,0 +1,12 @@
+node_modules
+dist
+build
+.next
+*.pyc
+__pycache__
+*.db
+*.sqlite
+coverage
+.venv
+venv
+env

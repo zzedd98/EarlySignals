@@ -1,0 +1,5 @@
+# Une URL de site B2B "source" (éditeur, ESN, cabinet) par ligne
+# Le crawler ira sur leurs pages Clients / Références.
+# Exemple (à remplacer par de vraies URLs) :
+# https://www.example-saas.com
+# https://www.example-esn.fr

@@ -1,0 +1,146 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: earlysignals-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-earlysignals}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-earlysignals_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-earlysignals}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-earlysignals}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - earlysignals-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: earlysignals-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - earlysignals-network
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.5
+    container_name: earlysignals-meilisearch
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-masterKey_dev_change_in_prod}
+      MEILI_ENV: development
+      MEILI_NO_ANALYTICS: "true"
+    ports:
+      - "7700:7700"
+    volumes:
+      - meilisearch_data:/meili_data
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - earlysignals-network
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: earlysignals-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - earlysignals-network
+
+  # API service (will be added in Milestone 1)
+  # api:
+  #   build:
+  #     context: ./apps/api
+  #     dockerfile: Dockerfile
+  #   container_name: earlysignals-api
+  #   environment:
+  #     - DATABASE_URL=postgresql://${POSTGRES_USER:-earlysignals}:${POSTGRES_PASSWORD:-earlysignals_dev}@postgres:5432/${POSTGRES_DB:-earlysignals}
+  #     - REDIS_URL=redis://redis:6379/0
+  #     - MEILI_URL=http://meilisearch:7700
+  #     - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey_dev_change_in_prod}
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     meilisearch:
+  #       condition: service_healthy
+  #   networks:
+  #     - earlysignals-network
+
+  # Worker service (will be added in Milestone 5)
+  # worker:
+  #   build:
+  #     context: ./apps/worker
+  #     dockerfile: Dockerfile
+  #   container_name: earlysignals-worker
+  #   environment:
+  #     - DATABASE_URL=postgresql://${POSTGRES_USER:-earlysignals}:${POSTGRES_PASSWORD:-earlysignals_dev}@postgres:5432/${POSTGRES_DB:-earlysignals}
+  #     - REDIS_URL=redis://redis:6379/0
+  #     - MEILI_URL=http://meilisearch:7700
+  #     - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-masterKey_dev_change_in_prod}
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     meilisearch:
+  #       condition: service_healthy
+  #   networks:
+  #     - earlysignals-network
+
+  # Scraper service (will be added in Milestone 4)
+  # scraper:
+  #   build:
+  #     context: ./apps/scraper
+  #     dockerfile: Dockerfile
+  #   container_name: earlysignals-scraper
+  #   environment:
+  #     - DATABASE_URL=postgresql://${POSTGRES_USER:-earlysignals}:${POSTGRES_PASSWORD:-earlysignals_dev}@postgres:5432/${POSTGRES_DB:-earlysignals}
+  #     - REDIS_URL=redis://redis:6379/0
+  #     - API_URL=http://api:8000
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - earlysignals-network
+
+  # Web service (will be added in Milestone 2)
+  # web:
+  #   build:
+  #     context: ./apps/web
+  #     dockerfile: Dockerfile
+  #   container_name: earlysignals-web
+  #   ports:
+  #     - "4200:4200"
+  #   depends_on:
+  #     - api
+  #   networks:
+  #     - earlysignals-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  meilisearch_data:
+
+networks:
+  earlysignals-network:
+    driver: bridge

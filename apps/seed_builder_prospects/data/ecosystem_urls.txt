@@ -1,0 +1,4 @@
+# Une URL de page "portfolio" ou "startups" par ligne
+# Exemple (à remplacer par de vraies URLs) :
+# https://www.example-incubator.fr/startups
+# https://frenchtech.com/companies

@@ -1,0 +1,13 @@
+# Seed Builder Prospects - dépendances (cohérent avec workers)
+httpx>=0.26.0
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0
+beautifulsoup4>=4.12.0
+tqdm>=4.66.0
+pytest>=7.0.0
+# Découverte Google via crawl HTML (fingerprint spoofing)
+playwright>=1.40.0
+playwright-stealth>=2.0.0
+# Pour résolution de captcha avec CapSolver
+aiohttp>=3.9.0

@@ -1,0 +1,28 @@
+{
+  "name": "earlysignals",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Early Signals - Business intelligence tool for B2B agencies and freelancers",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f",
+    "db:migrate": "cd apps/api && alembic upgrade head",
+    "db:revision": "cd apps/api && alembic revision --autogenerate -m",
+    "scraper": "node scripts/launch.mjs scraper",
+    "worker": "node scripts/launch.mjs worker"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
